@@ -7,6 +7,11 @@ public class CharacterController : MonoBehaviour
 {
     GameManager gameManager;
 
+    private Animator charAnimator;
+    private Rigidbody charRigidbody;
+
+    private bool canJump = false;
+
     enum currentLane
     {
         LeftLane,
@@ -14,13 +19,14 @@ public class CharacterController : MonoBehaviour
         RightLane
     }
 
-    [SerializeField]
     currentLane Lane;
 
     // Start is called before the first frame update
     void Start()
     {
         gameManager = GameManager.Instance;
+        charAnimator = GetComponent<Animator>();
+        charRigidbody = GetComponent<Rigidbody>();
 
         InitCharacter();
     }
@@ -69,5 +75,25 @@ public class CharacterController : MonoBehaviour
                     break;
             }
         }
+        else if(canJump && Input.GetKeyDown(KeyCode.Space))
+        {
+            charRigidbody.constraints = RigidbodyConstraints.None;
+            charRigidbody.AddForce(Vector3.up * 100);
+            charAnimator.SetTrigger("Jump");
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.tag == "Floor")
+        {
+            charRigidbody.constraints = RigidbodyConstraints.FreezePosition;
+            canJump = true;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        canJump = false;
     }
 }
