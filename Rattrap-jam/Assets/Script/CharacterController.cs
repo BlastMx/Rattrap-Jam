@@ -8,6 +8,7 @@ public class CharacterController : MonoBehaviour
     GameManager gameManager;
 
     private Animator charAnimator;
+    private Rigidbody charRigidbody;
 
     private bool canJump = false;
 
@@ -18,7 +19,6 @@ public class CharacterController : MonoBehaviour
         RightLane
     }
 
-    [SerializeField]
     currentLane Lane;
 
     // Start is called before the first frame update
@@ -26,6 +26,7 @@ public class CharacterController : MonoBehaviour
     {
         gameManager = GameManager.Instance;
         charAnimator = GetComponent<Animator>();
+        charRigidbody = GetComponent<Rigidbody>();
 
         InitCharacter();
     }
@@ -75,23 +76,24 @@ public class CharacterController : MonoBehaviour
             }
         }
         else if(canJump && Input.GetKeyDown(KeyCode.Space))
+        {
+            charRigidbody.constraints = RigidbodyConstraints.None;
+            charRigidbody.AddForce(Vector3.up * 100);
             charAnimator.SetTrigger("Jump");
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.gameObject.tag == "Floor")
         {
-            //CanJump
-            Debug.Log("CanJump");
+            charRigidbody.constraints = RigidbodyConstraints.FreezePosition;
             canJump = true;
         }
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        //CantJump
-        Debug.Log("CantJump");
         canJump = false;
     }
 }
