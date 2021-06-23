@@ -7,6 +7,10 @@ public class CharacterController : MonoBehaviour
 {
     GameManager gameManager;
 
+    private Animator charAnimator;
+
+    private bool canJump = false;
+
     enum currentLane
     {
         LeftLane,
@@ -21,6 +25,7 @@ public class CharacterController : MonoBehaviour
     void Start()
     {
         gameManager = GameManager.Instance;
+        charAnimator = GetComponent<Animator>();
 
         InitCharacter();
     }
@@ -69,5 +74,24 @@ public class CharacterController : MonoBehaviour
                     break;
             }
         }
+        else if(canJump && Input.GetKeyDown(KeyCode.Space))
+            charAnimator.SetTrigger("Jump");
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.tag == "Floor")
+        {
+            //CanJump
+            Debug.Log("CanJump");
+            canJump = true;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        //CantJump
+        Debug.Log("CantJump");
+        canJump = false;
     }
 }
