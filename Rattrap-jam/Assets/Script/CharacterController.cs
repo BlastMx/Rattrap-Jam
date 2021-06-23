@@ -1,15 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class CharacterController : MonoBehaviour
 {
     GameManager gameManager;
 
+    enum currentLane
+    {
+        LeftLane,
+        MiddleLane,
+        RightLane
+    }
+
+    [SerializeField]
+    currentLane Lane;
+
     // Start is called before the first frame update
     void Start()
     {
         gameManager = GameManager.Instance;
+
+        InitCharacter();
     }
 
     // Update is called once per frame
@@ -18,15 +31,43 @@ public class CharacterController : MonoBehaviour
         ControlCharacterMovement();
     }
 
+    void InitCharacter()
+    {
+        transform.position = Vector3.zero;
+        Lane = currentLane.MiddleLane;
+    }
+
     void ControlCharacterMovement()
     {
-        if (transform.position.x != gameManager.posLeftLane && Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Lane != currentLane.LeftLane && Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            transform.position = new Vector3(transform.position.x + gameManager.posLeftLane, transform.position.y);
+            switch (Lane)
+            {
+                case currentLane.RightLane:
+                    transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
+                    Lane = currentLane.MiddleLane;
+                    break;
+
+                case currentLane.MiddleLane:
+                    transform.DOMoveX(gameManager.posLeftLane, 0.5f);
+                    Lane = currentLane.LeftLane;
+                    break;
+            }
         }
-        else if (transform.position.x != gameManager.posRightLane && Input.GetKeyDown(KeyCode.RightArrow))
+        else if (Lane != currentLane.RightLane && Input.GetKeyDown(KeyCode.RightArrow))
         {
-            transform.position = new Vector3(transform.position.x + gameManager.posRightLane, transform.position.y);
+            switch (Lane)
+            {
+                case currentLane.LeftLane:
+                    transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
+                    Lane = currentLane.MiddleLane;
+                    break;
+
+                case currentLane.MiddleLane:
+                    transform.DOMoveX(gameManager.posRightLane, 0.5f);
+                    Lane = currentLane.RightLane;
+                    break;
+            }
         }
     }
 }
