@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
@@ -25,6 +26,7 @@ public class GameManager : MonoBehaviour
     public float magnitude;
 
     [Header("Player")]
+    public CharacterControl player;
     public float minSpeedValue;
     public float maxSpeedValue;
     public float boostSpeedValue;
@@ -33,6 +35,17 @@ public class GameManager : MonoBehaviour
     public bool isCold = false;
     [HideInInspector]
     public bool isDead = false;
+
+    [Header("Camera")]
+    public Transform mainCamera;
+
+    [Header("Start Menu")]
+    [SerializeField]
+    private CanvasGroup GameCanvas;
+    [SerializeField]
+    private CanvasGroup StartMenuCanvas;
+    [HideInInspector]
+    public bool isInStartMenu = true;
 
     public static GameManager Instance;
 
@@ -46,5 +59,29 @@ public class GameManager : MonoBehaviour
         {
             Destroy(this);
         }
+
+        GameCanvas.DOFade(0, 0.1f);
+        StartMenuCanvas.DOFade(1, 0.1f);
+    }
+
+    public void StartGame()
+    {
+        StartMenuCanvas.DOFade(0, 1f).OnPlay(()=> 
+        { 
+            mainCamera.DOLocalMove(Vector3.zero, 1f);
+            mainCamera.DOLocalRotate(Vector3.zero, 1f);
+        }).OnComplete(()=> {
+            GameCanvas.DOFade(1, 1f).OnComplete(() =>
+            {
+                isInStartMenu = false;
+                player.canIncreaseSpeed = true;
+                player.playerSpeed = minSpeedValue;
+            });
+        });
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }
