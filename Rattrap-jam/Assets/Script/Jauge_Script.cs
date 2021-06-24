@@ -42,6 +42,13 @@ public class Jauge_Script : MonoBehaviour
                 imageJauge.DOColor(gameManager.criticColor, 0.5f);
             }
         }
+        else if (imageJauge.fillAmount <= (gameManager.mediumValue / 100))
+        {
+            if(imageJauge.color != gameManager.mediumColor)
+            {
+                imageJauge.DOColor(gameManager.mediumColor, 0.5f);
+            }
+        }
         else
         {
             if (imageJauge.color != gameManager.positiveColor)

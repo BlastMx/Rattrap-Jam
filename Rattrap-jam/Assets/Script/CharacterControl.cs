@@ -11,6 +11,7 @@ public class CharacterControl : MonoBehaviour
     private Rigidbody charRigidbody;
 
     private bool canJump = false;
+    private bool canIncreaseSpeed = false;
 
     [SerializeField]
     private float playerSpeed;
@@ -41,12 +42,15 @@ public class CharacterControl : MonoBehaviour
     {
         ControlCharacterMovement();
         CharacterMovement();
+        IncreaseSpeed();
     }
 
     void InitCharacter()
     {
         transform.position = Vector3.zero;
         Lane = currentLane.MiddleLane;
+        playerSpeed = gameManager.minSpeedValue;
+        StartCoroutine(increaseSpeedAfterShock());
     }
 
     void CharacterMovement()
@@ -94,6 +98,23 @@ public class CharacterControl : MonoBehaviour
         }
     }
 
+    void IncreaseSpeed()
+    {
+        if (!canIncreaseSpeed || playerSpeed >= gameManager.maxSpeedValue)
+            return;
+
+        if (canIncreaseSpeed)
+        {
+            playerSpeed += Time.deltaTime / 2;
+        }
+    }
+
+    IEnumerator increaseSpeedAfterShock()
+    {
+        yield return new WaitForSeconds(gameManager.secondsBeforeIncrease);
+        canIncreaseSpeed = true;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Floor")
@@ -104,9 +125,10 @@ public class CharacterControl : MonoBehaviour
 
         if (canJump && other.gameObject.tag == "Obstacle")
         {
-            Debug.Log("aie");
             StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
-            playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser);
+            playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser/100);
+            playerSpeed = gameManager.minSpeedValue;
+            StartCoroutine(increaseSpeedAfterShock());
         }
     }
 
