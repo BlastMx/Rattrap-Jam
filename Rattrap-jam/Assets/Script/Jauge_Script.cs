@@ -40,6 +40,11 @@ public class Jauge_Script : MonoBehaviour
         imageJauge.fillAmount -= value;
     }
 
+    public void IncreaseJauge(float value)
+    {
+        imageJauge.fillAmount += value;
+    }
+
     public void CheckDeath()
     {
         if (imageJauge.fillAmount <= 0) 

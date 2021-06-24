@@ -46,6 +46,7 @@ MonoBehaviour:
   posLeftLane: -3
   posMiddleLane: 0
   posRightLane: 3
+  increaseJaugeEnergyRefill: 5
   shockObstacleDecreaser: 10
   decreaseMultiplier: 100
   mediumValue: 45
@@ -56,7 +57,9 @@ MonoBehaviour:
   cameraShake: {fileID: 0}
   duration: 0.3
   magnitude: 0.1
-  minSpeedValue: 5
+  minSpeedValue: 10
   maxSpeedValue: 15
   boostSpeedValue: 20
   secondsBeforeIncrease: 2
+  isCold: 0
+  isDead: 0
