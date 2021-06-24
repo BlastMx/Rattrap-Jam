@@ -654,6 +654,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Character
       objectReference: {fileID: 0}
+    - target: {fileID: 377234110916119773, guid: 5fd7a031344b17047a7b73afbd7be11c, type: 3}
+      propertyPath: playerJauge
+      value: 
+      objectReference: {fileID: 634673824}
     - target: {fileID: 1042553353132873318, guid: 5fd7a031344b17047a7b73afbd7be11c, type: 3}
       propertyPath: m_RootOrder
       value: 1

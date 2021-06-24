@@ -46,6 +46,7 @@ MonoBehaviour:
   posLeftLane: -3
   posMiddleLane: 0
   posRightLane: 3
+  shockObstacleDecreaser: 10
   decreaseMultiplier: 100
   criticValue: 20
   positiveColor: {r: 0, g: 0.5764706, b: 0.101960786, a: 1}

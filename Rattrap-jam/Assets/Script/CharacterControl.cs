@@ -14,6 +14,8 @@ public class CharacterControl : MonoBehaviour
 
     [SerializeField]
     private float playerSpeed;
+    [SerializeField]
+    private Jauge_Script playerJauge;
 
     enum currentLane
     {
@@ -104,6 +106,7 @@ public class CharacterControl : MonoBehaviour
         {
             Debug.Log("aie");
             StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
+            playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser);
         }
     }
 

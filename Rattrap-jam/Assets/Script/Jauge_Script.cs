@@ -28,7 +28,7 @@ public class Jauge_Script : MonoBehaviour
         imageJauge.fillAmount -= Time.deltaTime/gameManager.decreaseMultiplier;
     }
 
-    void SpecialDecreaseJauge(float value)
+    public void SpecialDecreaseJauge(float value)
     {
         imageJauge.fillAmount -= value;
     }
