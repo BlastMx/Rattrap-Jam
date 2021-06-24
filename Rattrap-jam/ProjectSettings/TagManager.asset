@@ -8,6 +8,7 @@ TagManager:
   - Obstacle
   - EnergyRefill
   - SpeedUpZone
+  - SlowZone
   layers:
   - Default
   - TransparentFX
