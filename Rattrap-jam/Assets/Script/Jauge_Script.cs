@@ -28,7 +28,7 @@ public class Jauge_Script : MonoBehaviour
         imageJauge.fillAmount -= Time.deltaTime/gameManager.decreaseMultiplier;
     }
 
-    void SpecialDecreaseJauge(float value)
+    public void SpecialDecreaseJauge(float value)
     {
         imageJauge.fillAmount -= value;
     }
@@ -40,6 +40,13 @@ public class Jauge_Script : MonoBehaviour
             if (imageJauge.color != gameManager.criticColor)
             {
                 imageJauge.DOColor(gameManager.criticColor, 0.5f);
+            }
+        }
+        else if (imageJauge.fillAmount <= (gameManager.mediumValue / 100))
+        {
+            if(imageJauge.color != gameManager.mediumColor)
+            {
+                imageJauge.DOColor(gameManager.mediumColor, 0.5f);
             }
         }
         else

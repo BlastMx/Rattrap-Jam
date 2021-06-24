@@ -5,16 +5,16 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 637601242230244302
-    m_Hash: 179823906
+      ticks: 637601293041236478
+    m_Hash: 1293027564
   m_LockFileStatus:
     m_FilePath: C:/Users/mxcol/Projet_Unity/Rattrap-Jam/Rattrap-jam/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 637601242230323925
-    m_Hash: 965902535
+      ticks: 637601293041236478
+    m_Hash: 103756660
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_PackageAssets:
