@@ -46,3 +46,10 @@ MonoBehaviour:
   posLeftLane: -3
   posMiddleLane: 0
   posRightLane: 3
+  decreaseMultiplier: 100
+  criticValue: 20
+  positiveColor: {r: 0, g: 0.5764706, b: 0.101960786, a: 1}
+  criticColor: {r: 0.5764706, g: 0, b: 0.029727455, a: 1}
+  cameraShake: {fileID: 0}
+  duration: 0.2
+  magnitude: 0.2
