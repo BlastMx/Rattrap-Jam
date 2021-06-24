@@ -108,7 +108,7 @@ public class CharacterControl : MonoBehaviour
 
     void IncreaseSpeedBoost()
     {
-        playerSpeed += Time.deltaTime * 2f;
+        playerSpeed = gameManager.boostSpeedValue;
     }
 
     void DecreaseSpeedBoost()
