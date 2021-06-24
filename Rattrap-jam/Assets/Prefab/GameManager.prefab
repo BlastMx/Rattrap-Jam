@@ -46,6 +46,7 @@ MonoBehaviour:
   posLeftLane: -3
   posMiddleLane: 0
   posRightLane: 3
+  increaseJaugeEnergyRefill: 5
   shockObstacleDecreaser: 10
   decreaseMultiplier: 100
   mediumValue: 45
@@ -60,3 +61,5 @@ MonoBehaviour:
   maxSpeedValue: 15
   boostSpeedValue: 20
   secondsBeforeIncrease: 2
+  isCold: 0
+  isDead: 0

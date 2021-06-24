@@ -137,6 +137,14 @@ public class CharacterControl : MonoBehaviour
             playerSpeed = gameManager.minSpeedValue;
             StartCoroutine(increaseSpeedAfterShock());
         }
+
+        if(other.gameObject.tag == "EnergyRefill")
+        {
+            playerJauge.IncreaseJauge(gameManager.increaseJaugeEnergyRefill / 100);
+            //Play particle effect
+            //Play sound effect
+            Destroy(other.gameObject);
+        }
     }
 
     private void OnTriggerExit(Collider other)

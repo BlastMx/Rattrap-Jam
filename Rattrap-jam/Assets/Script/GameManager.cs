@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public float posRightLane;
 
     [Header("Jauge")]
+    public float increaseJaugeEnergyRefill;
     public float shockObstacleDecreaser;
     public float decreaseMultiplier;
     public float mediumValue;
