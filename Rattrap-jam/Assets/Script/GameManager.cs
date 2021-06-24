@@ -9,6 +9,17 @@ public class GameManager : MonoBehaviour
     public float posMiddleLane;
     public float posRightLane;
 
+    [Header("Jauge")]
+    public float decreaseMultiplier;
+    public float criticValue;
+    public Color positiveColor;
+    public Color criticColor;
+
+    [Header("Shake")]
+    public CameraShake cameraShake;
+    public float duration;
+    public float magnitude;
+
     public static GameManager Instance;
 
     private void Awake()
