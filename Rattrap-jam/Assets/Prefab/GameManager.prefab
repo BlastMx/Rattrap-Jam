@@ -57,7 +57,7 @@ MonoBehaviour:
   cameraShake: {fileID: 0}
   duration: 0.3
   magnitude: 0.1
-  minSpeedValue: 5
+  minSpeedValue: 10
   maxSpeedValue: 15
   boostSpeedValue: 20
   secondsBeforeIncrease: 2

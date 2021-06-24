@@ -12,6 +12,7 @@ public class CharacterControl : MonoBehaviour
 
     private bool canJump = false;
     private bool canIncreaseSpeed = false;
+    private bool canBoost = false;
 
     [SerializeField]
     private float playerSpeed;
@@ -49,6 +50,7 @@ public class CharacterControl : MonoBehaviour
         ControlCharacterMovement();
         CharacterMovement();
         IncreaseSpeed();
+        SpeedBoost();
     }
 
     void InitCharacter()
@@ -104,9 +106,27 @@ public class CharacterControl : MonoBehaviour
         }
     }
 
+    void IncreaseSpeedBoost()
+    {
+        playerSpeed += Time.deltaTime * 2f;
+    }
+
+    void DecreaseSpeedBoost()
+    {
+        playerSpeed -= Time.deltaTime * 2f;
+    }
+
+    void SpeedBoost()
+    {
+        if (canBoost)
+            IncreaseSpeedBoost();
+        else if (playerSpeed >= gameManager.maxSpeedValue && !canBoost)
+            DecreaseSpeedBoost();
+    }
+
     void IncreaseSpeed()
     {
-        if (!canIncreaseSpeed || playerSpeed >= gameManager.maxSpeedValue)
+        if (!canIncreaseSpeed || canBoost || playerSpeed >= gameManager.maxSpeedValue)
             return;
 
         if (canIncreaseSpeed)
@@ -145,11 +165,17 @@ public class CharacterControl : MonoBehaviour
             //Play sound effect
             Destroy(other.gameObject);
         }
+
+        if (other.gameObject.tag == "SpeedUpZone")
+            canBoost = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
         if(other.gameObject.tag == "Floor")
             canJump = false;
+
+        if(other.gameObject.tag == "SpeedUpZone")
+            canBoost = false;
     }
 }
