@@ -40,6 +40,12 @@ public class CharacterControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (gameManager.isDead)
+        {
+            charAnimator.SetTrigger("Dying");
+            return;
+        }
+
         ControlCharacterMovement();
         CharacterMovement();
         IncreaseSpeed();
@@ -127,6 +133,7 @@ public class CharacterControl : MonoBehaviour
         {
             StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
             playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser/100);
+            Debug.Log(gameManager.shockObstacleDecreaser / 100);
             playerSpeed = gameManager.minSpeedValue;
             StartCoroutine(increaseSpeedAfterShock());
         }

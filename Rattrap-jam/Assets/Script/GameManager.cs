@@ -28,6 +28,10 @@ public class GameManager : MonoBehaviour
     public float maxSpeedValue;
     public float boostSpeedValue;
     public float secondsBeforeIncrease;
+    [HideInInspector]
+    public bool isCold = false;
+    [HideInInspector]
+    public bool isDead = false;
 
     public static GameManager Instance;
 

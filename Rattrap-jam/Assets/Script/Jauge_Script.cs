@@ -9,6 +9,11 @@ public class Jauge_Script : MonoBehaviour
     GameManager gameManager;
     private Image imageJauge;
 
+    [SerializeField]
+    private Image freezeImage;
+
+    private float alpha;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -19,8 +24,10 @@ public class Jauge_Script : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CheckDeath();
         DecreaseJauge();
         ChangeColorJauge();
+        FreezeScreen();
     }
 
     void DecreaseJauge()
@@ -33,6 +40,26 @@ public class Jauge_Script : MonoBehaviour
         imageJauge.fillAmount -= value;
     }
 
+    public void CheckDeath()
+    {
+        if (imageJauge.fillAmount <= 0) 
+            gameManager.isDead = true;
+    }
+
+    void FreezeScreen()
+    {
+        if(imageJauge.fillAmount > gameManager.mediumValue / 100)
+        {
+            freezeImage.DOFade(0f, 2f);
+            alpha = 0;
+        }
+        else if(imageJauge.fillAmount <= gameManager.mediumValue / 100)
+        {
+            alpha += Time.deltaTime / 50;
+            freezeImage.color = new Color(1, 1, 1, alpha);
+        }
+    }
+
     void ChangeColorJauge()
     {
         if (imageJauge.fillAmount <= (gameManager.criticValue / 100))
@@ -40,6 +67,7 @@ public class Jauge_Script : MonoBehaviour
             if (imageJauge.color != gameManager.criticColor)
             {
                 imageJauge.DOColor(gameManager.criticColor, 0.5f);
+                gameManager.isCold = true;
             }
         }
         else if (imageJauge.fillAmount <= (gameManager.mediumValue / 100))
@@ -47,6 +75,7 @@ public class Jauge_Script : MonoBehaviour
             if(imageJauge.color != gameManager.mediumColor)
             {
                 imageJauge.DOColor(gameManager.mediumColor, 0.5f);
+                gameManager.isCold = false;
             }
         }
         else
@@ -54,6 +83,7 @@ public class Jauge_Script : MonoBehaviour
             if (imageJauge.color != gameManager.positiveColor)
             {
                 imageJauge.DOColor(gameManager.positiveColor, 0.5f);
+                gameManager.isCold = false;
             }
         }
     }

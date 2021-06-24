@@ -54,8 +54,8 @@ MonoBehaviour:
   mediumColor: {r: 0.5764706, g: 0.39204183, b: 0, a: 1}
   criticColor: {r: 0.5764706, g: 0, b: 0.029727455, a: 1}
   cameraShake: {fileID: 0}
-  duration: 0.2
-  magnitude: 0.2
+  duration: 0.3
+  magnitude: 0.1
   minSpeedValue: 5
   maxSpeedValue: 15
   boostSpeedValue: 20
