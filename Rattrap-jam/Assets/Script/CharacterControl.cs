@@ -13,6 +13,7 @@ public class CharacterControl : MonoBehaviour
     private bool canJump = false;
     private bool canIncreaseSpeed = false;
     private bool canBoost = false;
+    private bool canSlow = false;
 
     [SerializeField]
     private float playerSpeed;
@@ -50,6 +51,7 @@ public class CharacterControl : MonoBehaviour
         ControlCharacterMovement();
         CharacterMovement();
         IncreaseSpeed();
+        EnterSlowZone();
         SpeedBoost();
     }
 
@@ -57,8 +59,9 @@ public class CharacterControl : MonoBehaviour
     {
         transform.position = Vector3.zero;
         Lane = currentLane.MiddleLane;
+
         playerSpeed = gameManager.minSpeedValue;
-        StartCoroutine(increaseSpeedAfterShock());
+        canIncreaseSpeed = true;
     }
 
     void CharacterMovement()
@@ -124,9 +127,16 @@ public class CharacterControl : MonoBehaviour
             DecreaseSpeedBoost();
     }
 
+    void EnterSlowZone()
+    {
+        if (canSlow)
+            playerSpeed = gameManager.minSpeedValue;
+
+    }
+
     void IncreaseSpeed()
     {
-        if (!canIncreaseSpeed || canBoost || playerSpeed >= gameManager.maxSpeedValue)
+        if (!canIncreaseSpeed || canSlow || canBoost || playerSpeed >= gameManager.maxSpeedValue)
             return;
 
         if (canIncreaseSpeed)
@@ -143,39 +153,55 @@ public class CharacterControl : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Floor")
+        switch (other.gameObject.tag)
         {
-            charRigidbody.constraints = RigidbodyConstraints.FreezePosition;
-            canJump = true;
-        }
+            case "Floor":
+                charRigidbody.constraints = RigidbodyConstraints.FreezePosition;
+                canJump = true;
+                break;
 
-        if (canJump && other.gameObject.tag == "Obstacle")
-        {
-            StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
-            playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser/100);
-            Debug.Log(gameManager.shockObstacleDecreaser / 100);
-            playerSpeed = gameManager.minSpeedValue;
-            StartCoroutine(increaseSpeedAfterShock());
-        }
+            case "Obstacle":
+                if (canJump)
+                {
+                    StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
+                    playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser / 100);
+                    playerSpeed = gameManager.minSpeedValue;
+                    StartCoroutine(increaseSpeedAfterShock());
+                }
+                break;
 
-        if(other.gameObject.tag == "EnergyRefill")
-        {
-            playerJauge.IncreaseJauge(gameManager.increaseJaugeEnergyRefill / 100);
-            //Play particle effect
-            //Play sound effect
-            Destroy(other.gameObject);
-        }
+            case "EnergyRefill":
+                playerJauge.IncreaseJauge(gameManager.increaseJaugeEnergyRefill / 100);
+                //Play particle effect
+                //Play sound effect
+                Destroy(other.gameObject);
+                break;
 
-        if (other.gameObject.tag == "SpeedUpZone")
-            canBoost = true;
+            case "SpeedUpZone":
+                canBoost = true;
+                break;
+
+            case "SlowZone":
+                canSlow = true;
+                break;
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if(other.gameObject.tag == "Floor")
-            canJump = false;
+        switch (other.gameObject.tag)
+        {
+            case "Floor":
+                canJump = false;
+                break;
 
-        if(other.gameObject.tag == "SpeedUpZone")
-            canBoost = false;
+            case "SpeedUpZone":
+                canBoost = false;
+                break;
+
+            case "SlowZone":
+                canSlow = false;
+                break;
+        }
     }
 }
