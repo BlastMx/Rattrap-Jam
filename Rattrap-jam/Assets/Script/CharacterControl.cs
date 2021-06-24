@@ -11,12 +11,12 @@ public class CharacterControl : MonoBehaviour
     private Rigidbody charRigidbody;
 
     private bool canJump = false;
-    private bool canIncreaseSpeed = false;
+    [HideInInspector]
+    public bool canIncreaseSpeed = false;
     private bool canBoost = false;
     private bool canSlow = false;
 
-    [SerializeField]
-    private float playerSpeed;
+    public float playerSpeed;
     [SerializeField]
     private Jauge_Script playerJauge;
 
@@ -42,6 +42,9 @@ public class CharacterControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (gameManager.isInStartMenu)
+            return;
+
         if (gameManager.isDead)
         {
             charAnimator.SetTrigger("Dying");
@@ -59,9 +62,6 @@ public class CharacterControl : MonoBehaviour
     {
         transform.position = Vector3.zero;
         Lane = currentLane.MiddleLane;
-
-        playerSpeed = gameManager.minSpeedValue;
-        canIncreaseSpeed = true;
     }
 
     void CharacterMovement()
@@ -184,6 +184,7 @@ public class CharacterControl : MonoBehaviour
 
             case "SlowZone":
                 canSlow = true;
+                charAnimator.SetBool("SlowZone", canSlow);
                 break;
 
             case "WindZone":
@@ -196,6 +197,19 @@ public class CharacterControl : MonoBehaviour
                         break;
 
                     case WindZone_Script.windZonePos.MiddleLane: //Wind Zone sur la middle lane -> déplace le joueur aléatoirement à gauche ou à droite
+                        int randomValue = Random.Range(0, 2);
+                        switch (randomValue)
+                        {
+                            case 0:
+                                transform.DOMoveX(gameManager.posLeftLane, 0.5f);
+                                Lane = currentLane.LeftLane;
+                                break;
+
+                            case 1:
+                                transform.DOMoveX(gameManager.posRightLane, 0.5f);
+                                Lane = currentLane.RightLane;
+                                break;
+                        }
                         break;
 
                     case WindZone_Script.windZonePos.RightLane: //Wind Zone sur la right lane -> déplace le joueur au milieu
@@ -221,6 +235,7 @@ public class CharacterControl : MonoBehaviour
 
             case "SlowZone":
                 canSlow = false;
+                charAnimator.SetBool("SlowZone", canSlow);
                 break;
         }
     }
