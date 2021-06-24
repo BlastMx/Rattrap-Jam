@@ -67,6 +67,7 @@ public class CharacterControl : MonoBehaviour
     void CharacterMovement()
     {
         transform.position += transform.forward * Time.deltaTime * playerSpeed;
+        charAnimator.SetFloat("SpeedPlayer", playerSpeed);
     }
 
     void ControlCharacterMovement()
@@ -183,6 +184,25 @@ public class CharacterControl : MonoBehaviour
 
             case "SlowZone":
                 canSlow = true;
+                break;
+
+            case "WindZone":
+                StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
+                switch (other.gameObject.GetComponent<WindZone_Script>().windPos)
+                {
+                    case WindZone_Script.windZonePos.LeftLane: //Wind Zone sur la left lane -> déplace le joueur au milieu
+                        transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
+                        Lane = currentLane.MiddleLane;
+                        break;
+
+                    case WindZone_Script.windZonePos.MiddleLane: //Wind Zone sur la middle lane -> déplace le joueur aléatoirement à gauche ou à droite
+                        break;
+
+                    case WindZone_Script.windZonePos.RightLane: //Wind Zone sur la right lane -> déplace le joueur au milieu
+                        transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
+                        Lane = currentLane.MiddleLane;
+                        break;
+                }
                 break;
         }
     }
