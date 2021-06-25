@@ -119,12 +119,14 @@ public class CharacterControl : MonoBehaviour
 
     void IncreaseSpeedBoost()
     {
-        playerSpeed = gameManager.boostSpeedValue;
+        //playerSpeed = gameManager.boostSpeedValue;
+        changeSpeedPlayer(gameManager.boostSpeedValue);
     }
 
     void DecreaseSpeedBoost()
     {
         playerSpeed -= Time.deltaTime * 2f;
+        changeSpeedPlayer(gameManager.maxSpeedValue);
     }
 
     void SpeedBoost()
@@ -138,7 +140,8 @@ public class CharacterControl : MonoBehaviour
     void EnterSlowZone()
     {
         if (canSlow)
-            playerSpeed = gameManager.obstacleSpeedMalus;
+            changeSpeedPlayer(gameManager.obstacleSpeedMalus);
+            //playerSpeed = gameManager.obstacleSpeedMalus;
     }
 
     void IncreaseSpeed()
@@ -156,6 +159,11 @@ public class CharacterControl : MonoBehaviour
     {
         yield return new WaitForSeconds(gameManager.secondsBeforeIncrease);
         canIncreaseSpeed = true;
+    }
+
+    void changeSpeedPlayer(float value)
+    {
+        DOTween.To(() => playerSpeed, x => playerSpeed = x, value, 2);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -176,7 +184,8 @@ public class CharacterControl : MonoBehaviour
                         other.transform.parent.GetChild(1).gameObject.GetComponent<ParticleSystem>().Play();
                         Destroy(other.gameObject);
                         playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser / 100);
-                        playerSpeed = gameManager.obstacleSpeedMalus;
+                        //playerSpeed = gameManager.obstacleSpeedMalus;
+                        changeSpeedPlayer(gameManager.obstacleSpeedMalus);
                         StartCoroutine(increaseSpeedAfterShock());
                     }
                     break;
@@ -256,7 +265,8 @@ public class CharacterControl : MonoBehaviour
             case "SlowZone":
                 canSlow = false;
                 charAnimator.SetBool("SlowZone", canSlow);
-                playerSpeed = gameManager.minSpeedValue;
+                //playerSpeed = gameManager.minSpeedValue;
+                changeSpeedPlayer(gameManager.minSpeedValue);
                 break;
         }
     }
