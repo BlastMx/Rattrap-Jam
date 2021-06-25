@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Player")]
     public CharacterControl player;
+    public float obstacleSpeedMalus;
     public float minSpeedValue;
     public float maxSpeedValue;
     public float boostSpeedValue;
@@ -52,6 +53,11 @@ public class GameManager : MonoBehaviour
     [Header("Main Menu")]
     [HideInInspector]
     public bool isInStartMenu = true;
+
+    [Header("Death Zone")]
+    public DeathZone_Script deathZone;
+    [SerializeField]
+    private float secondsBeforeStartMove;
 
     public static GameManager Instance;
 
@@ -97,8 +103,15 @@ public class GameManager : MonoBehaviour
                 isInStartMenu = false;
                 player.canIncreaseSpeed = true;
                 player.playerSpeed = minSpeedValue;
+                StartCoroutine(moveDeathZone());
             });
         });
+    }
+
+    IEnumerator moveDeathZone()
+    {
+        yield return new WaitForSeconds(secondsBeforeStartMove);
+        deathZone.canMove = true;
     }
 
     public void BackMainMenu()
@@ -109,5 +122,33 @@ public class GameManager : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+    }
+
+    public IEnumerator winZone()
+    {
+        player.transform.DOMoveX(posMiddleLane, 0.5f);
+        player.Lane = CharacterControl.currentLane.MiddleLane;
+
+        asWin = true;
+        player.cameraHolder.parent = null;
+
+        GameCanvas.DOFade(0, 1f);
+
+        yield return new WaitForSeconds(1);
+
+        WinCanvas.gameObject.SetActive(true);
+        WinCanvas.DOFade(1, 1f);
+    }
+
+    public IEnumerator deathZoneCoroutine()
+    {
+        isDead = true;
+
+        GameCanvas.DOFade(0, 1f);
+
+        yield return new WaitForSeconds(1);
+
+        DeathCanvas.gameObject.SetActive(true);
+        DeathCanvas.DOFade(1, 1f);
     }
 }

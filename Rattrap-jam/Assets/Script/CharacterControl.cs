@@ -20,17 +20,17 @@ public class CharacterControl : MonoBehaviour
     [SerializeField]
     private Jauge_Script playerJauge;
 
-    [SerializeField]
-    private Transform cameraHolder;
+    public Transform cameraHolder;
 
-    enum currentLane
+    [HideInInspector]
+    public enum currentLane
     {
         LeftLane,
         MiddleLane,
         RightLane
     }
 
-    currentLane Lane;
+    public currentLane Lane;
 
     // Start is called before the first frame update
     void Start()
@@ -157,7 +157,7 @@ public class CharacterControl : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!gameManager.asWin)
+        if (!gameManager.asWin || !gameManager.isDead)
         {
             switch (other.gameObject.tag)
             {
@@ -171,7 +171,7 @@ public class CharacterControl : MonoBehaviour
                     {
                         StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
                         playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser / 100);
-                        playerSpeed = gameManager.minSpeedValue;
+                        playerSpeed = gameManager.obstacleSpeedMalus;
                         StartCoroutine(increaseSpeedAfterShock());
                     }
                     break;
@@ -225,26 +225,14 @@ public class CharacterControl : MonoBehaviour
                     break;
 
                 case "WinZone":
-                    StartCoroutine(winZone());
+                    StartCoroutine(gameManager.winZone());
+                    break;
+
+                case "DeathZone":
+                    StartCoroutine(gameManager.deathZoneCoroutine());
                     break;
             }
         }
-    }
-
-    IEnumerator winZone()
-    {
-        transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
-        Lane = currentLane.MiddleLane;
-
-        gameManager.asWin = true;
-        cameraHolder.parent = null;
-
-        gameManager.GameCanvas.DOFade(0, 1f);
-
-        yield return new WaitForSeconds(1);
-
-        gameManager.WinCanvas.gameObject.SetActive(true);
-        gameManager.WinCanvas.DOFade(1, 1f);
     }
 
     private void OnTriggerExit(Collider other)
