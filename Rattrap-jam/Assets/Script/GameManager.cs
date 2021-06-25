@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -35,15 +36,20 @@ public class GameManager : MonoBehaviour
     public bool isCold = false;
     [HideInInspector]
     public bool isDead = false;
+    [HideInInspector]
+    public bool asWin = false;
 
     [Header("Camera")]
     public Transform mainCamera;
 
-    [Header("Start Menu")]
-    [SerializeField]
-    private CanvasGroup GameCanvas;
+    [Header("Canvas Manager")]
+    public CanvasGroup GameCanvas;
     [SerializeField]
     private CanvasGroup StartMenuCanvas;
+    public CanvasGroup WinCanvas;
+    public CanvasGroup DeathCanvas;
+
+    [Header("Main Menu")]
     [HideInInspector]
     public bool isInStartMenu = true;
 
@@ -60,8 +66,22 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         }
 
+        InitCanvas();
+    }
+
+    void InitCanvas()
+    {
         GameCanvas.DOFade(0, 0.1f);
+        GameCanvas.gameObject.SetActive(false);
+
+        WinCanvas.DOFade(0, 0.1f);
+        WinCanvas.gameObject.SetActive(false);
+
+        DeathCanvas.DOFade(0, 0.1f);
+        DeathCanvas.gameObject.SetActive(false);
+
         StartMenuCanvas.DOFade(1, 0.1f);
+
     }
 
     public void StartGame()
@@ -71,6 +91,7 @@ public class GameManager : MonoBehaviour
             mainCamera.DOLocalMove(Vector3.zero, 1f);
             mainCamera.DOLocalRotate(Vector3.zero, 1f);
         }).OnComplete(()=> {
+            GameCanvas.gameObject.SetActive(true);
             GameCanvas.DOFade(1, 1f).OnComplete(() =>
             {
                 isInStartMenu = false;
@@ -78,6 +99,11 @@ public class GameManager : MonoBehaviour
                 player.playerSpeed = minSpeedValue;
             });
         });
+    }
+
+    public void BackMainMenu()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); 
     }
 
     public void QuitGame()
