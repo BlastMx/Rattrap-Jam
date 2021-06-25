@@ -22,6 +22,9 @@ public class CharacterControl : MonoBehaviour
 
     public Transform cameraHolder;
 
+    [SerializeField]
+    private ParticleSystem energyRefillParticle;
+
     [HideInInspector]
     public enum currentLane
     {
@@ -30,6 +33,7 @@ public class CharacterControl : MonoBehaviour
         RightLane
     }
 
+    [HideInInspector]
     public currentLane Lane;
 
     // Start is called before the first frame update
@@ -181,6 +185,7 @@ public class CharacterControl : MonoBehaviour
                 case "EnergyRefill":
                     playerJauge.IncreaseJauge(gameManager.increaseJaugeEnergyRefill / 100);
                     //Play particle effect
+                    energyRefillParticle.Play();
                     //Play sound effect
                     Destroy(other.gameObject);
                     break;
