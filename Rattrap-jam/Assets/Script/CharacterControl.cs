@@ -170,6 +170,8 @@ public class CharacterControl : MonoBehaviour
                     if (canJump)
                     {
                         StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
+                        other.transform.parent.GetChild(1).gameObject.GetComponent<ParticleSystem>().Play();
+                        Destroy(other.gameObject);
                         playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser / 100);
                         playerSpeed = gameManager.obstacleSpeedMalus;
                         StartCoroutine(increaseSpeedAfterShock());
