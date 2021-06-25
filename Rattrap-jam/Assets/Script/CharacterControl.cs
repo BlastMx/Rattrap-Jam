@@ -138,8 +138,7 @@ public class CharacterControl : MonoBehaviour
     void EnterSlowZone()
     {
         if (canSlow)
-            playerSpeed = gameManager.minSpeedValue;
-
+            playerSpeed = gameManager.obstacleSpeedMalus;
     }
 
     void IncreaseSpeed()
@@ -257,6 +256,7 @@ public class CharacterControl : MonoBehaviour
             case "SlowZone":
                 canSlow = false;
                 charAnimator.SetBool("SlowZone", canSlow);
+                playerSpeed = gameManager.minSpeedValue;
                 break;
         }
     }
