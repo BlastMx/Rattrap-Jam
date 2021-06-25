@@ -1194,6 +1194,7 @@ MonoBehaviour:
   canIncreaseSpeed: 0
   playerSpeed: 0
   playerJauge: {fileID: 0}
+  cameraHolder: {fileID: 406940717100084006}
 --- !u!1 &5098898096695828791
 GameObject:
   m_ObjectHideFlags: 0

@@ -20,14 +20,17 @@ public class CharacterControl : MonoBehaviour
     [SerializeField]
     private Jauge_Script playerJauge;
 
-    enum currentLane
+    public Transform cameraHolder;
+
+    [HideInInspector]
+    public enum currentLane
     {
         LeftLane,
         MiddleLane,
         RightLane
     }
 
-    currentLane Lane;
+    public currentLane Lane;
 
     // Start is called before the first frame update
     void Start()
@@ -154,70 +157,81 @@ public class CharacterControl : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        switch (other.gameObject.tag)
+        if (!gameManager.asWin || !gameManager.isDead)
         {
-            case "Floor":
-                charRigidbody.constraints = RigidbodyConstraints.FreezePosition;
-                canJump = true;
-                break;
+            switch (other.gameObject.tag)
+            {
+                case "Floor":
+                    charRigidbody.constraints = RigidbodyConstraints.FreezePosition;
+                    canJump = true;
+                    break;
 
-            case "Obstacle":
-                if (canJump)
-                {
+                case "Obstacle":
+                    if (canJump)
+                    {
+                        StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
+                        playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser / 100);
+                        playerSpeed = gameManager.obstacleSpeedMalus;
+                        StartCoroutine(increaseSpeedAfterShock());
+                    }
+                    break;
+
+                case "EnergyRefill":
+                    playerJauge.IncreaseJauge(gameManager.increaseJaugeEnergyRefill / 100);
+                    //Play particle effect
+                    //Play sound effect
+                    Destroy(other.gameObject);
+                    break;
+
+                case "SpeedUpZone":
+                    canBoost = true;
+                    break;
+
+                case "SlowZone":
+                    canSlow = true;
+                    charAnimator.SetBool("SlowZone", canSlow);
+                    break;
+
+                case "WindZone":
                     StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
-                    playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser / 100);
-                    playerSpeed = gameManager.minSpeedValue;
-                    StartCoroutine(increaseSpeedAfterShock());
-                }
-                break;
+                    switch (other.gameObject.GetComponent<WindZone_Script>().windPos)
+                    {
+                        case WindZone_Script.windZonePos.LeftLane: //Wind Zone sur la left lane -> déplace le joueur au milieu
+                            transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
+                            Lane = currentLane.MiddleLane;
+                            break;
 
-            case "EnergyRefill":
-                playerJauge.IncreaseJauge(gameManager.increaseJaugeEnergyRefill / 100);
-                //Play particle effect
-                //Play sound effect
-                Destroy(other.gameObject);
-                break;
+                        case WindZone_Script.windZonePos.MiddleLane: //Wind Zone sur la middle lane -> déplace le joueur aléatoirement à gauche ou à droite
+                            int randomValue = Random.Range(0, 2);
+                            switch (randomValue)
+                            {
+                                case 0:
+                                    transform.DOMoveX(gameManager.posLeftLane, 0.5f);
+                                    Lane = currentLane.LeftLane;
+                                    break;
 
-            case "SpeedUpZone":
-                canBoost = true;
-                break;
+                                case 1:
+                                    transform.DOMoveX(gameManager.posRightLane, 0.5f);
+                                    Lane = currentLane.RightLane;
+                                    break;
+                            }
+                            break;
 
-            case "SlowZone":
-                canSlow = true;
-                charAnimator.SetBool("SlowZone", canSlow);
-                break;
+                        case WindZone_Script.windZonePos.RightLane: //Wind Zone sur la right lane -> déplace le joueur au milieu
+                            transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
+                            Lane = currentLane.MiddleLane;
+                            break;
+                    }
+                    break;
 
-            case "WindZone":
-                StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
-                switch (other.gameObject.GetComponent<WindZone_Script>().windPos)
-                {
-                    case WindZone_Script.windZonePos.LeftLane: //Wind Zone sur la left lane -> déplace le joueur au milieu
-                        transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
-                        Lane = currentLane.MiddleLane;
-                        break;
+                case "WinZone":
+                    StartCoroutine(gameManager.winZone());
+                    break;
 
-                    case WindZone_Script.windZonePos.MiddleLane: //Wind Zone sur la middle lane -> déplace le joueur aléatoirement à gauche ou à droite
-                        int randomValue = Random.Range(0, 2);
-                        switch (randomValue)
-                        {
-                            case 0:
-                                transform.DOMoveX(gameManager.posLeftLane, 0.5f);
-                                Lane = currentLane.LeftLane;
-                                break;
-
-                            case 1:
-                                transform.DOMoveX(gameManager.posRightLane, 0.5f);
-                                Lane = currentLane.RightLane;
-                                break;
-                        }
-                        break;
-
-                    case WindZone_Script.windZonePos.RightLane: //Wind Zone sur la right lane -> déplace le joueur au milieu
-                        transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
-                        Lane = currentLane.MiddleLane;
-                        break;
-                }
-                break;
+                case "DeathZone":
+                    StartCoroutine(gameManager.deathZoneCoroutine());
+                    break;
+            }
         }
     }
 
