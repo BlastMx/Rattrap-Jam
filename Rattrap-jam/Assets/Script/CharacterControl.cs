@@ -14,7 +14,8 @@ public class CharacterControl : MonoBehaviour
     [HideInInspector]
     public bool canIncreaseSpeed = false;
     private bool canBoost = false;
-    private bool canSlow = false;
+    [HideInInspector]
+    public bool canSlow = false;
     private bool lookBehind = false;
 
     public float playerSpeed;
@@ -38,6 +39,8 @@ public class CharacterControl : MonoBehaviour
     public currentLane Lane;
 
     private AudioSource audioSourcePlayer;
+    [SerializeField]
+    private AudioSource tempestHeavy;
 
     [Header("Sounds")]
     [SerializeField]
@@ -53,11 +56,11 @@ public class CharacterControl : MonoBehaviour
     [SerializeField]
     private AudioClip pushedByWind;
     [SerializeField]
-    private AudioClip tempestHeavy;
-    [SerializeField]
     private AudioClip deafeatThunder;
     [SerializeField]
     private AudioClip runningOnSnow;
+    [SerializeField]
+    private AudioClip freezingIce;
 
     // Start is called before the first frame update
     void Start()
@@ -217,8 +220,7 @@ public class CharacterControl : MonoBehaviour
     void ChangeClip(AudioClip audioClip)
     {
         audioSourcePlayer.volume = 1;
-        audioSourcePlayer.clip = audioClip;
-        audioSourcePlayer.Play();
+        audioSourcePlayer.PlayOneShot(audioClip);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -260,9 +262,9 @@ public class CharacterControl : MonoBehaviour
 
                 case "SlowZone":
                     canSlow = true;
-                    gameManager.ChangeAmbiantSounds(canSlow);
-                    audioSourcePlayer.clip = tempestHeavy;
-                    audioSourcePlayer.Play();
+                    ChangeClip(freezingIce);
+                    gameManager.freezingCanvas.DOFade(1, 5f);
+                    tempestHeavy.DOFade(1, 1f);
                     charAnimator.SetBool("SlowZone", canSlow);
                     break;
 
@@ -325,9 +327,9 @@ public class CharacterControl : MonoBehaviour
 
             case "SlowZone":
                 canSlow = false;
-                gameManager.ChangeAmbiantSounds(canSlow);
+                gameManager.freezingCanvas.DOFade(0, 2f);
+                tempestHeavy.DOFade(0, 1f);
                 charAnimator.SetBool("SlowZone", canSlow);
-                //playerSpeed = gameManager.minSpeedValue;
                 changeSpeedPlayer(gameManager.minSpeedValue);
                 break;
         }
