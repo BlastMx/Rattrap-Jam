@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -47,12 +48,26 @@ public class GameManager : MonoBehaviour
     public CanvasGroup GameCanvas;
     [SerializeField]
     private CanvasGroup StartMenuCanvas;
+    [SerializeField]
+    private CanvasGroup MainMenuCanvas;
+    [SerializeField]
+    private CanvasGroup HowToPlayCanvas;
     public CanvasGroup WinCanvas;
     public CanvasGroup DeathCanvas;
 
     [Header("Main Menu")]
     [HideInInspector]
     public bool isInStartMenu = true;
+
+    [Header("How To Play Meu")]
+    [SerializeField]
+    private Image previousButtonImage;
+    [SerializeField]
+    private Image nextButtonImage;
+    [SerializeField]
+    private Transform page1;
+    [SerializeField]
+    private Transform page2;
 
     [Header("Death Zone")]
     public DeathZone_Script deathZone;
@@ -76,6 +91,8 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         }
 
+        mainCamera.localPosition = new Vector3(0.25f, 0.2f, 5f);
+
         InitCanvas();
     }
 
@@ -89,6 +106,9 @@ public class GameManager : MonoBehaviour
 
         DeathCanvas.DOFade(0, 0.1f);
         DeathCanvas.gameObject.SetActive(false);
+
+        HowToPlayCanvas.DOFade(0, 0.1f);
+        HowToPlayCanvas.gameObject.SetActive(false);
 
         StartMenuCanvas.DOFade(1, 0.1f);
 
@@ -120,7 +140,51 @@ public class GameManager : MonoBehaviour
 
     public void BackMainMenu()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); 
+        if(asWin || isDead)
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        else
+        {
+            HowToPlayCanvas.DOFade(0, 1f).OnComplete(() => { 
+                HowToPlayCanvas.gameObject.SetActive(false);
+                MainMenuCanvas.gameObject.SetActive(true);
+                MainMenuCanvas.DOFade(1, 1f);
+            });
+        }
+    }
+
+    public void HowToPlayMenu()
+    {
+        MainMenuCanvas.DOFade(0, 1f).OnComplete(() => {
+            HowToPlayCanvas.gameObject.SetActive(true);
+            MainMenuCanvas.gameObject.SetActive(false); 
+            HowToPlayCanvas.DOFade(1, 1f); 
+        });
+    }
+
+    public void ChangePageOptions(int index)
+    {
+        switch (index)
+        {
+            case 1:
+                previousButtonImage.DOFade(0, 0.5f).OnComplete(() =>
+                {
+                    page2.DOLocalMoveX(1920f, 1f);
+                    page1.DOLocalMoveX(0f, 1f).OnComplete(() => {
+                        nextButtonImage.DOFade(1f, 0.5f);
+                    });
+                });
+                break;
+
+            case 2:
+                nextButtonImage.DOFade(0, 0.5f).OnComplete(() =>
+                {
+                    page1.DOLocalMoveX(-1920f, 1f);
+                    page2.DOLocalMoveX(0f, 1f).OnComplete(()=> {
+                        previousButtonImage.DOFade(1f, 0.5f);
+                    });
+                });
+                break;
+        }
     }
 
     public void QuitGame()
