@@ -270,12 +270,12 @@ public class CharacterControl : MonoBehaviour
                     StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
                     switch (other.gameObject.GetComponent<WindZone_Script>().windPos)
                     {
-                        case WindZone_Script.windZonePos.LeftLane: //Wind Zone sur la left lane -> déplace le joueur au milieu
+                        case WindZone_Script.windZonePos.LeftLane: //Wind Zone sur la left lane -> dï¿½place le joueur au milieu
                             transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
                             Lane = currentLane.MiddleLane;
                             break;
 
-                        case WindZone_Script.windZonePos.MiddleLane: //Wind Zone sur la middle lane -> déplace le joueur aléatoirement à gauche ou à droite
+                        case WindZone_Script.windZonePos.MiddleLane: //Wind Zone sur la middle lane -> dï¿½place le joueur alï¿½atoirement ï¿½ gauche ou ï¿½ droite
                             int randomValue = Random.Range(0, 2);
                             switch (randomValue)
                             {
@@ -291,7 +291,7 @@ public class CharacterControl : MonoBehaviour
                             }
                             break;
 
-                        case WindZone_Script.windZonePos.RightLane: //Wind Zone sur la right lane -> déplace le joueur au milieu
+                        case WindZone_Script.windZonePos.RightLane: //Wind Zone sur la right lane -> dï¿½place le joueur au milieu
                             transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
                             Lane = currentLane.MiddleLane;
                             break;
