@@ -14,6 +14,9 @@ public class Jauge_Script : MonoBehaviour
 
     private float alpha;
 
+    [SerializeField]
+    private AudioSource jaugeAudioSource;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -71,6 +74,7 @@ public class Jauge_Script : MonoBehaviour
         {
             if (imageJauge.color != gameManager.criticColor)
             {
+                jaugeAudioSource.DOFade(1, 1f);
                 imageJauge.DOColor(gameManager.criticColor, 0.5f);
                 gameManager.isCold = true;
             }
@@ -79,6 +83,7 @@ public class Jauge_Script : MonoBehaviour
         {
             if(imageJauge.color != gameManager.mediumColor)
             {
+                jaugeAudioSource.DOFade(0, 1f);
                 imageJauge.DOColor(gameManager.mediumColor, 0.5f);
                 gameManager.isCold = false;
             }
@@ -87,6 +92,7 @@ public class Jauge_Script : MonoBehaviour
         {
             if (imageJauge.color != gameManager.positiveColor)
             {
+                jaugeAudioSource.DOFade(0, 1f);
                 imageJauge.DOColor(gameManager.positiveColor, 0.5f);
                 gameManager.isCold = false;
             }

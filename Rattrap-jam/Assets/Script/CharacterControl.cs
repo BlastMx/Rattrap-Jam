@@ -37,12 +37,35 @@ public class CharacterControl : MonoBehaviour
     [HideInInspector]
     public currentLane Lane;
 
+    private AudioSource audioSourcePlayer;
+
+    [Header("Sounds")]
+    [SerializeField]
+    private AudioClip bonusGetRefill;
+    [SerializeField]
+    private AudioClip changingLane;
+    [SerializeField]
+    private AudioClip impactWithSnowball;
+    [SerializeField]
+    private AudioClip jumping;
+    [SerializeField]
+    private AudioClip landingOnSnow;
+    [SerializeField]
+    private AudioClip pushedByWind;
+    [SerializeField]
+    private AudioClip tempestHeavy;
+    [SerializeField]
+    private AudioClip deafeatThunder;
+    [SerializeField]
+    private AudioClip runningOnSnow;
+
     // Start is called before the first frame update
     void Start()
     {
         gameManager = GameManager.Instance;
         charAnimator = GetComponent<Animator>();
         charRigidbody = GetComponent<Rigidbody>();
+        audioSourcePlayer = GetComponent<AudioSource>();
 
         InitCharacter();
     }
@@ -113,6 +136,7 @@ public class CharacterControl : MonoBehaviour
                         Lane = currentLane.LeftLane;
                         break;
                 }
+                ChangeClip(changingLane);
             }
             else if (Lane != currentLane.RightLane && Input.GetKeyDown(KeyCode.RightArrow))
             {
@@ -128,12 +152,15 @@ public class CharacterControl : MonoBehaviour
                         Lane = currentLane.RightLane;
                         break;
                 }
+                ChangeClip(changingLane);
             }
             else if (canJump && Input.GetKeyDown(KeyCode.Space))
             {
                 charRigidbody.constraints = RigidbodyConstraints.None;
                 charRigidbody.AddForce(Vector3.up * 150);
                 charAnimator.SetTrigger("Jump");
+                if (!canSlow)
+                    ChangeClip(jumping);
             }
         }
     }
@@ -187,6 +214,13 @@ public class CharacterControl : MonoBehaviour
         DOTween.To(() => playerSpeed, x => playerSpeed = x, value, 2);
     }
 
+    void ChangeClip(AudioClip audioClip)
+    {
+        audioSourcePlayer.volume = 1;
+        audioSourcePlayer.clip = audioClip;
+        audioSourcePlayer.Play();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (!gameManager.asWin || !gameManager.isDead)
@@ -216,6 +250,7 @@ public class CharacterControl : MonoBehaviour
                     //Play particle effect
                     energyRefillParticle.Play();
                     //Play sound effect
+                    ChangeClip(bonusGetRefill);
                     Destroy(other.gameObject);
                     break;
 
@@ -225,6 +260,9 @@ public class CharacterControl : MonoBehaviour
 
                 case "SlowZone":
                     canSlow = true;
+                    gameManager.ChangeAmbiantSounds(canSlow);
+                    audioSourcePlayer.clip = tempestHeavy;
+                    audioSourcePlayer.Play();
                     charAnimator.SetBool("SlowZone", canSlow);
                     break;
 
@@ -258,6 +296,7 @@ public class CharacterControl : MonoBehaviour
                             Lane = currentLane.MiddleLane;
                             break;
                     }
+                    ChangeClip(pushedByWind);
                     break;
 
                 case "WinZone":
@@ -266,6 +305,7 @@ public class CharacterControl : MonoBehaviour
 
                 case "DeathZone":
                     StartCoroutine(gameManager.deathZoneCoroutine());
+                    ChangeClip(deafeatThunder);
                     break;
             }
         }
@@ -285,10 +325,22 @@ public class CharacterControl : MonoBehaviour
 
             case "SlowZone":
                 canSlow = false;
+                gameManager.ChangeAmbiantSounds(canSlow);
                 charAnimator.SetBool("SlowZone", canSlow);
                 //playerSpeed = gameManager.minSpeedValue;
                 changeSpeedPlayer(gameManager.minSpeedValue);
                 break;
         }
+    }
+
+    public void PlayLandingOnSnow()
+    {
+        if (!canSlow)
+            ChangeClip(landingOnSnow);
+    }
+
+    public void PlayRunningOnSnow()
+    {
+        audioSourcePlayer.PlayOneShot(runningOnSnow);
     }
 }

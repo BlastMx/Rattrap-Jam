@@ -59,6 +59,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private float secondsBeforeStartMove;
 
+    [Header("Sound")]
+    public AudioSource audioManager;
+    public AudioSource audioPlayer;
+
     public static GameManager Instance;
 
     private void Awake()
@@ -150,5 +154,20 @@ public class GameManager : MonoBehaviour
 
         DeathCanvas.gameObject.SetActive(true);
         DeathCanvas.DOFade(1, 1f);
+    }
+
+    public void ChangeAmbiantSounds(bool value)
+    {
+        if (value)
+        {
+            audioPlayer.volume = 0;
+            audioManager.DOFade(0, 0.5f);
+            audioPlayer.DOFade(1, 0.5f);
+        }
+        else if(!value)
+        {
+            audioManager.DOFade(1, 0.5f);
+            audioPlayer.DOFade(0, 0.5f);
+        }
     }
 }
