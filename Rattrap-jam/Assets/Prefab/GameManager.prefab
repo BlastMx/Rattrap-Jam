@@ -58,13 +58,19 @@ MonoBehaviour:
   duration: 0.3
   magnitude: 0.1
   player: {fileID: 0}
+  obstacleSpeedMalus: 5
   minSpeedValue: 10
   maxSpeedValue: 15
   boostSpeedValue: 20
   secondsBeforeIncrease: 2
   isCold: 0
   isDead: 0
+  asWin: 0
   mainCamera: {fileID: 0}
   GameCanvas: {fileID: 0}
   StartMenuCanvas: {fileID: 0}
+  WinCanvas: {fileID: 0}
+  DeathCanvas: {fileID: 0}
   isInStartMenu: 1
+  deathZone: {fileID: 0}
+  secondsBeforeStartMove: 1

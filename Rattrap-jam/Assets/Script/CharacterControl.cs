@@ -15,19 +15,27 @@ public class CharacterControl : MonoBehaviour
     public bool canIncreaseSpeed = false;
     private bool canBoost = false;
     private bool canSlow = false;
+    private bool lookBehind = false;
 
     public float playerSpeed;
     [SerializeField]
     private Jauge_Script playerJauge;
 
-    enum currentLane
+    public Transform cameraHolder;
+
+    [SerializeField]
+    private ParticleSystem energyRefillParticle;
+
+    [HideInInspector]
+    public enum currentLane
     {
         LeftLane,
         MiddleLane,
         RightLane
     }
 
-    currentLane Lane;
+    [HideInInspector]
+    public currentLane Lane;
 
     // Start is called before the first frame update
     void Start()
@@ -72,57 +80,79 @@ public class CharacterControl : MonoBehaviour
 
     void ControlCharacterMovement()
     {
-        if (Lane != currentLane.LeftLane && Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.C))
         {
-            switch (Lane)
-            {
-                case currentLane.RightLane:
-                    transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
-                    Lane = currentLane.MiddleLane;
-                    break;
-
-                case currentLane.MiddleLane:
-                    transform.DOMoveX(gameManager.posLeftLane, 0.5f);
-                    Lane = currentLane.LeftLane;
-                    break;
-            }
+            lookBehind = true;
+            charAnimator.SetBool("LookBehind", lookBehind);
+            changeSpeedPlayer(gameManager.minSpeedValue);
+            gameManager.mainCamera.DOLocalMove(new Vector3(0.5f, 1.28f, 7.57f), 0.5f);
+            gameManager.mainCamera.DOLocalRotate(new Vector3(0, 194f, 0), 0.5f);
         }
-        else if (Lane != currentLane.RightLane && Input.GetKeyDown(KeyCode.RightArrow))
+        else if (Input.GetKeyUp(KeyCode.C))
         {
-            switch (Lane)
-            {
-                case currentLane.LeftLane:
-                    transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
-                    Lane = currentLane.MiddleLane;
-                    break;
-
-                case currentLane.MiddleLane:
-                    transform.DOMoveX(gameManager.posRightLane, 0.5f);
-                    Lane = currentLane.RightLane;
-                    break;
-            }
+            lookBehind = false;
+            charAnimator.SetBool("LookBehind", lookBehind);
+            changeSpeedPlayer(gameManager.maxSpeedValue);
+            gameManager.mainCamera.DOLocalMove(Vector3.zero, 1f);
+            gameManager.mainCamera.DOLocalRotate(Vector3.zero, 1f);
         }
-        else if(canJump && Input.GetKeyDown(KeyCode.Space))
+
+        if (!lookBehind)
         {
-            charRigidbody.constraints = RigidbodyConstraints.None;
-            charRigidbody.AddForce(Vector3.up * 150);
-            charAnimator.SetTrigger("Jump");
+            if (Lane != currentLane.LeftLane && Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                switch (Lane)
+                {
+                    case currentLane.RightLane:
+                        transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
+                        Lane = currentLane.MiddleLane;
+                        break;
+
+                    case currentLane.MiddleLane:
+                        transform.DOMoveX(gameManager.posLeftLane, 0.5f);
+                        Lane = currentLane.LeftLane;
+                        break;
+                }
+            }
+            else if (Lane != currentLane.RightLane && Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                switch (Lane)
+                {
+                    case currentLane.LeftLane:
+                        transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
+                        Lane = currentLane.MiddleLane;
+                        break;
+
+                    case currentLane.MiddleLane:
+                        transform.DOMoveX(gameManager.posRightLane, 0.5f);
+                        Lane = currentLane.RightLane;
+                        break;
+                }
+            }
+            else if (canJump && Input.GetKeyDown(KeyCode.Space))
+            {
+                charRigidbody.constraints = RigidbodyConstraints.None;
+                charRigidbody.AddForce(Vector3.up * 150);
+                charAnimator.SetTrigger("Jump");
+            }
         }
     }
 
     void IncreaseSpeedBoost()
     {
-        playerSpeed = gameManager.boostSpeedValue;
+        //playerSpeed = gameManager.boostSpeedValue;
+        changeSpeedPlayer(gameManager.boostSpeedValue);
     }
 
     void DecreaseSpeedBoost()
     {
         playerSpeed -= Time.deltaTime * 2f;
+        changeSpeedPlayer(gameManager.maxSpeedValue);
     }
 
     void SpeedBoost()
     {
-        if (canBoost)
+        if (canBoost && !lookBehind)
             IncreaseSpeedBoost();
         else if (playerSpeed >= gameManager.maxSpeedValue && !canBoost)
             DecreaseSpeedBoost();
@@ -131,8 +161,8 @@ public class CharacterControl : MonoBehaviour
     void EnterSlowZone()
     {
         if (canSlow)
-            playerSpeed = gameManager.minSpeedValue;
-
+            changeSpeedPlayer(gameManager.obstacleSpeedMalus);
+            //playerSpeed = gameManager.obstacleSpeedMalus;
     }
 
     void IncreaseSpeed()
@@ -152,72 +182,92 @@ public class CharacterControl : MonoBehaviour
         canIncreaseSpeed = true;
     }
 
+    void changeSpeedPlayer(float value)
+    {
+        DOTween.To(() => playerSpeed, x => playerSpeed = x, value, 2);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        switch (other.gameObject.tag)
+        if (!gameManager.asWin || !gameManager.isDead)
         {
-            case "Floor":
-                charRigidbody.constraints = RigidbodyConstraints.FreezePosition;
-                canJump = true;
-                break;
+            switch (other.gameObject.tag)
+            {
+                case "Floor":
+                    charRigidbody.constraints = RigidbodyConstraints.FreezePosition;
+                    canJump = true;
+                    break;
 
-            case "Obstacle":
-                if (canJump)
-                {
+                case "Obstacle":
+                    if (canJump)
+                    {
+                        StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
+                        other.transform.parent.GetChild(1).gameObject.GetComponent<ParticleSystem>().Play();
+                        Destroy(other.gameObject);
+                        playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser / 100);
+                        //playerSpeed = gameManager.obstacleSpeedMalus;
+                        changeSpeedPlayer(gameManager.obstacleSpeedMalus);
+                        StartCoroutine(increaseSpeedAfterShock());
+                    }
+                    break;
+
+                case "EnergyRefill":
+                    playerJauge.IncreaseJauge(gameManager.increaseJaugeEnergyRefill / 100);
+                    //Play particle effect
+                    energyRefillParticle.Play();
+                    //Play sound effect
+                    Destroy(other.gameObject);
+                    break;
+
+                case "SpeedUpZone":
+                    canBoost = true;
+                    break;
+
+                case "SlowZone":
+                    canSlow = true;
+                    charAnimator.SetBool("SlowZone", canSlow);
+                    break;
+
+                case "WindZone":
                     StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
-                    playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser / 100);
-                    playerSpeed = gameManager.minSpeedValue;
-                    StartCoroutine(increaseSpeedAfterShock());
-                }
-                break;
+                    switch (other.gameObject.GetComponent<WindZone_Script>().windPos)
+                    {
+                        case WindZone_Script.windZonePos.LeftLane: //Wind Zone sur la left lane -> déplace le joueur au milieu
+                            transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
+                            Lane = currentLane.MiddleLane;
+                            break;
 
-            case "EnergyRefill":
-                playerJauge.IncreaseJauge(gameManager.increaseJaugeEnergyRefill / 100);
-                //Play particle effect
-                //Play sound effect
-                Destroy(other.gameObject);
-                break;
+                        case WindZone_Script.windZonePos.MiddleLane: //Wind Zone sur la middle lane -> déplace le joueur aléatoirement à gauche ou à droite
+                            int randomValue = Random.Range(0, 2);
+                            switch (randomValue)
+                            {
+                                case 0:
+                                    transform.DOMoveX(gameManager.posLeftLane, 0.5f);
+                                    Lane = currentLane.LeftLane;
+                                    break;
 
-            case "SpeedUpZone":
-                canBoost = true;
-                break;
+                                case 1:
+                                    transform.DOMoveX(gameManager.posRightLane, 0.5f);
+                                    Lane = currentLane.RightLane;
+                                    break;
+                            }
+                            break;
 
-            case "SlowZone":
-                canSlow = true;
-                charAnimator.SetBool("SlowZone", canSlow);
-                break;
+                        case WindZone_Script.windZonePos.RightLane: //Wind Zone sur la right lane -> déplace le joueur au milieu
+                            transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
+                            Lane = currentLane.MiddleLane;
+                            break;
+                    }
+                    break;
 
-            case "WindZone":
-                StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
-                switch (other.gameObject.GetComponent<WindZone_Script>().windPos)
-                {
-                    case WindZone_Script.windZonePos.LeftLane: //Wind Zone sur la left lane -> déplace le joueur au milieu
-                        transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
-                        Lane = currentLane.MiddleLane;
-                        break;
+                case "WinZone":
+                    StartCoroutine(gameManager.winZone());
+                    break;
 
-                    case WindZone_Script.windZonePos.MiddleLane: //Wind Zone sur la middle lane -> déplace le joueur aléatoirement à gauche ou à droite
-                        int randomValue = Random.Range(0, 2);
-                        switch (randomValue)
-                        {
-                            case 0:
-                                transform.DOMoveX(gameManager.posLeftLane, 0.5f);
-                                Lane = currentLane.LeftLane;
-                                break;
-
-                            case 1:
-                                transform.DOMoveX(gameManager.posRightLane, 0.5f);
-                                Lane = currentLane.RightLane;
-                                break;
-                        }
-                        break;
-
-                    case WindZone_Script.windZonePos.RightLane: //Wind Zone sur la right lane -> déplace le joueur au milieu
-                        transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
-                        Lane = currentLane.MiddleLane;
-                        break;
-                }
-                break;
+                case "DeathZone":
+                    StartCoroutine(gameManager.deathZoneCoroutine());
+                    break;
+            }
         }
     }
 
@@ -236,6 +286,8 @@ public class CharacterControl : MonoBehaviour
             case "SlowZone":
                 canSlow = false;
                 charAnimator.SetBool("SlowZone", canSlow);
+                //playerSpeed = gameManager.minSpeedValue;
+                changeSpeedPlayer(gameManager.minSpeedValue);
                 break;
         }
     }
