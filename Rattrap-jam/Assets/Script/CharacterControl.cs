@@ -15,6 +15,7 @@ public class CharacterControl : MonoBehaviour
     public bool canIncreaseSpeed = false;
     private bool canBoost = false;
     private bool canSlow = false;
+    private bool lookBehind = false;
 
     public float playerSpeed;
     [SerializeField]
@@ -79,41 +80,61 @@ public class CharacterControl : MonoBehaviour
 
     void ControlCharacterMovement()
     {
-        if (Lane != currentLane.LeftLane && Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.C))
         {
-            switch (Lane)
-            {
-                case currentLane.RightLane:
-                    transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
-                    Lane = currentLane.MiddleLane;
-                    break;
-
-                case currentLane.MiddleLane:
-                    transform.DOMoveX(gameManager.posLeftLane, 0.5f);
-                    Lane = currentLane.LeftLane;
-                    break;
-            }
+            lookBehind = true;
+            charAnimator.SetBool("LookBehind", lookBehind);
+            changeSpeedPlayer(gameManager.minSpeedValue);
+            gameManager.mainCamera.DOLocalMove(new Vector3(0.5f, 1.28f, 7.57f), 0.5f);
+            gameManager.mainCamera.DOLocalRotate(new Vector3(0, 194f, 0), 0.5f);
         }
-        else if (Lane != currentLane.RightLane && Input.GetKeyDown(KeyCode.RightArrow))
+        else if (Input.GetKeyUp(KeyCode.C))
         {
-            switch (Lane)
-            {
-                case currentLane.LeftLane:
-                    transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
-                    Lane = currentLane.MiddleLane;
-                    break;
-
-                case currentLane.MiddleLane:
-                    transform.DOMoveX(gameManager.posRightLane, 0.5f);
-                    Lane = currentLane.RightLane;
-                    break;
-            }
+            lookBehind = false;
+            charAnimator.SetBool("LookBehind", lookBehind);
+            changeSpeedPlayer(gameManager.maxSpeedValue);
+            gameManager.mainCamera.DOLocalMove(Vector3.zero, 1f);
+            gameManager.mainCamera.DOLocalRotate(Vector3.zero, 1f);
         }
-        else if(canJump && Input.GetKeyDown(KeyCode.Space))
+
+        if (!lookBehind)
         {
-            charRigidbody.constraints = RigidbodyConstraints.None;
-            charRigidbody.AddForce(Vector3.up * 150);
-            charAnimator.SetTrigger("Jump");
+            if (Lane != currentLane.LeftLane && Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                switch (Lane)
+                {
+                    case currentLane.RightLane:
+                        transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
+                        Lane = currentLane.MiddleLane;
+                        break;
+
+                    case currentLane.MiddleLane:
+                        transform.DOMoveX(gameManager.posLeftLane, 0.5f);
+                        Lane = currentLane.LeftLane;
+                        break;
+                }
+            }
+            else if (Lane != currentLane.RightLane && Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                switch (Lane)
+                {
+                    case currentLane.LeftLane:
+                        transform.DOMoveX(gameManager.posMiddleLane, 0.5f);
+                        Lane = currentLane.MiddleLane;
+                        break;
+
+                    case currentLane.MiddleLane:
+                        transform.DOMoveX(gameManager.posRightLane, 0.5f);
+                        Lane = currentLane.RightLane;
+                        break;
+                }
+            }
+            else if (canJump && Input.GetKeyDown(KeyCode.Space))
+            {
+                charRigidbody.constraints = RigidbodyConstraints.None;
+                charRigidbody.AddForce(Vector3.up * 150);
+                charAnimator.SetTrigger("Jump");
+            }
         }
     }
 
@@ -131,7 +152,7 @@ public class CharacterControl : MonoBehaviour
 
     void SpeedBoost()
     {
-        if (canBoost)
+        if (canBoost && !lookBehind)
             IncreaseSpeedBoost();
         else if (playerSpeed >= gameManager.maxSpeedValue && !canBoost)
             DecreaseSpeedBoost();
