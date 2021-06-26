@@ -56,15 +56,18 @@ public class Jauge_Script : MonoBehaviour
 
     void FreezeScreen()
     {
-        if(imageJauge.fillAmount > gameManager.mediumValue / 100)
+        if (!gameManager.player.canSlow)
         {
-            freezeImage.DOFade(0f, 2f);
-            alpha = 0;
-        }
-        else if(imageJauge.fillAmount <= gameManager.mediumValue / 100)
-        {
-            alpha += Time.deltaTime / 50;
-            freezeImage.color = new Color(1, 1, 1, alpha);
+            if (imageJauge.fillAmount > gameManager.mediumValue / 100)
+            {
+                freezeImage.DOFade(0f, 2f);
+                alpha = 0;
+            }
+            else if (imageJauge.fillAmount <= gameManager.mediumValue / 100)
+            {
+                alpha += Time.deltaTime / 50;
+                freezeImage.color = new Color(1, 1, 1, alpha);
+            }
         }
     }
 

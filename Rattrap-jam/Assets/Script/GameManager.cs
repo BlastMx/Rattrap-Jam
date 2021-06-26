@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Canvas Manager")]
     public CanvasGroup GameCanvas;
+    public Image freezingCanvas; 
     [SerializeField]
     private CanvasGroup StartMenuCanvas;
     [SerializeField]
