@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 199169234370047554}
   - component: {fileID: 198263866997273600}
   m_Layer: 0
-  m_Name: pf_vfx-ult_demo_psys_oneshot_ultraHeavyBomb
+  m_Name: Explosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

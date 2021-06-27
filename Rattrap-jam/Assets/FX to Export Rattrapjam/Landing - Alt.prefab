@@ -18936,7 +18936,7 @@ GameObject:
   - component: {fileID: 19820956}
   - component: {fileID: 19970706}
   m_Layer: 0
-  m_Name: CartoonyBodySlam
+  m_Name: Landing - Alt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
