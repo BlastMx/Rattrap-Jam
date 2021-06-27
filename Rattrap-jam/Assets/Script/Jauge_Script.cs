@@ -50,8 +50,11 @@ public class Jauge_Script : MonoBehaviour
 
     public void CheckDeath()
     {
-        if (imageJauge.fillAmount <= 0) 
+        if (imageJauge.fillAmount <= 0)
+        {
+            gameManager.deadByFuel = true;
             gameManager.isDead = true;
+        }
     }
 
     void FreezeScreen()
@@ -77,6 +80,8 @@ public class Jauge_Script : MonoBehaviour
         {
             if (imageJauge.color != gameManager.criticColor)
             {
+                gameManager.player.HeavyOilDripping.Play();
+                gameManager.player.lightOilDripping.Stop();
                 jaugeAudioSource.DOFade(1, 1f);
                 imageJauge.DOColor(gameManager.criticColor, 0.5f);
                 gameManager.isCold = true;
@@ -86,6 +91,8 @@ public class Jauge_Script : MonoBehaviour
         {
             if(imageJauge.color != gameManager.mediumColor)
             {
+                gameManager.player.HeavyOilDripping.Stop();
+                gameManager.player.lightOilDripping.Play();
                 jaugeAudioSource.DOFade(0, 1f);
                 imageJauge.DOColor(gameManager.mediumColor, 0.5f);
                 gameManager.isCold = false;
@@ -95,6 +102,8 @@ public class Jauge_Script : MonoBehaviour
         {
             if (imageJauge.color != gameManager.positiveColor)
             {
+                gameManager.player.HeavyOilDripping.Stop();
+                gameManager.player.lightOilDripping.Stop();
                 jaugeAudioSource.DOFade(0, 1f);
                 imageJauge.DOColor(gameManager.positiveColor, 0.5f);
                 gameManager.isCold = false;

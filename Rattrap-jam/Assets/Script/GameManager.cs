@@ -40,6 +40,8 @@ public class GameManager : MonoBehaviour
     public bool isDead = false;
     [HideInInspector]
     public bool asWin = false;
+    [HideInInspector]
+    public bool deadByFuel = false;
 
     [Header("Camera")]
     public Transform mainCamera;
@@ -141,7 +143,7 @@ public class GameManager : MonoBehaviour
 
     public void BackMainMenu()
     {
-        if(asWin || isDead)
+        if (asWin || isDead)
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         else
         {
@@ -234,5 +236,13 @@ public class GameManager : MonoBehaviour
             audioManager.DOFade(1, 0.5f);
             audioPlayer.DOFade(0, 0.5f);
         }
+    }
+
+    public void ButtonSound()
+    {
+        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Return))
+            return;
+
+        GetComponent<AudioSource>().PlayOneShot(GetComponent<AudioSource>().clip);
     }
 }

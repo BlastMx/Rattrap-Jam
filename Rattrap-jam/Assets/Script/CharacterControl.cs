@@ -10,7 +10,8 @@ public class CharacterControl : MonoBehaviour
     private Animator charAnimator;
     private Rigidbody charRigidbody;
 
-    private bool canJump = false;
+    [HideInInspector]
+    public bool canJump = false;
     [HideInInspector]
     public bool canIncreaseSpeed = false;
     private bool canBoost = false;
@@ -24,8 +25,11 @@ public class CharacterControl : MonoBehaviour
 
     public Transform cameraHolder;
 
+    [Header("Energy refill Particles")]
     [SerializeField]
     private ParticleSystem energyRefillParticle;
+    [SerializeField]
+    private ParticleSystem twinkleParticle;
 
     [HideInInspector]
     public enum currentLane
@@ -37,6 +41,25 @@ public class CharacterControl : MonoBehaviour
 
     [HideInInspector]
     public currentLane Lane;
+
+    [Header("SpeedUp Particles")]
+    [SerializeField]
+    private Transform speedUp;
+
+    [Header("Explosion particles")]
+    public ParticleSystem explosion;
+
+    [Header("Oil particle")]
+    public ParticleSystem lightOilDripping;
+    public ParticleSystem HeavyOilDripping;
+    [SerializeField]
+    private ParticleSystem oilSplat;
+
+    [Header("Jump particles")]
+    [SerializeField]
+    private ParticleSystem jumpSmoke;
+    [SerializeField]
+    private ParticleSystem landingParticles;
 
     private AudioSource audioSourcePlayer;
     [SerializeField]
@@ -159,6 +182,7 @@ public class CharacterControl : MonoBehaviour
             }
             else if (canJump && Input.GetKeyDown(KeyCode.Space))
             {
+                jumpSmoke.Play();
                 charRigidbody.constraints = RigidbodyConstraints.None;
                 charRigidbody.AddForce(Vector3.up * 150);
                 charAnimator.SetTrigger("Jump");
@@ -239,9 +263,10 @@ public class CharacterControl : MonoBehaviour
                     {
                         StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
                         other.transform.parent.GetChild(1).gameObject.GetComponent<ParticleSystem>().Play();
+                        oilSplat.Play();
+                        ChangeClip(impactWithSnowball);
                         Destroy(other.gameObject);
                         playerJauge.SpecialDecreaseJauge(gameManager.shockObstacleDecreaser / 100);
-                        //playerSpeed = gameManager.obstacleSpeedMalus;
                         changeSpeedPlayer(gameManager.obstacleSpeedMalus);
                         StartCoroutine(increaseSpeedAfterShock());
                     }
@@ -251,13 +276,16 @@ public class CharacterControl : MonoBehaviour
                     playerJauge.IncreaseJauge(gameManager.increaseJaugeEnergyRefill / 100);
                     //Play particle effect
                     energyRefillParticle.Play();
+                    twinkleParticle.Play();
                     //Play sound effect
                     ChangeClip(bonusGetRefill);
-                    Destroy(other.gameObject);
+                    other.gameObject.transform.DOScale(Vector3.zero, 0.1f);
+                    //Destroy(other.gameObject);
                     break;
 
                 case "SpeedUpZone":
                     canBoost = true;
+                    speedUp.DOScale(new Vector3(0.2f, 0.2f, 0.2f), 1f);
                     break;
 
                 case "SlowZone":
@@ -323,6 +351,7 @@ public class CharacterControl : MonoBehaviour
 
             case "SpeedUpZone":
                 canBoost = false;
+                speedUp.DOScale(Vector3.zero, 1f);
                 break;
 
             case "SlowZone":
@@ -338,11 +367,20 @@ public class CharacterControl : MonoBehaviour
     public void PlayLandingOnSnow()
     {
         if (!canSlow)
+        {
             ChangeClip(landingOnSnow);
+            landingParticles.Play();
+        }
     }
 
     public void PlayRunningOnSnow()
     {
         audioSourcePlayer.PlayOneShot(runningOnSnow);
+    }
+
+    public void PlayExplosion()
+    {
+        if(gameManager.deadByFuel)
+            explosion.Play();
     }
 }
