@@ -83,6 +83,8 @@ public class CharacterControl : MonoBehaviour
     [SerializeField]
     private AudioClip runningOnSnow;
     [SerializeField]
+    private AudioClip runningOnGround;
+    [SerializeField]
     private AudioClip freezingIce;
 
     // Start is called before the first frame update
@@ -375,7 +377,7 @@ public class CharacterControl : MonoBehaviour
 
     public void PlayRunningOnSnow()
     {
-        audioSourcePlayer.PlayOneShot(runningOnSnow);
+        audioSourcePlayer.PlayOneShot(canBoost ? runningOnGround : runningOnSnow);
     }
 
     public void PlayExplosion()
