@@ -27,6 +27,9 @@ public class Jauge_Script : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.Instance.asWin || GameManager.Instance.isDead)
+            return;
+
         CheckDeath();
         DecreaseJauge();
         ChangeColorJauge();

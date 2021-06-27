@@ -80,6 +80,12 @@ public class GameManager : MonoBehaviour
     [Header("Sound")]
     public AudioSource audioManager;
     public AudioSource audioPlayer;
+    [SerializeField]
+    private AudioSource audioBlizzard;
+    [SerializeField]
+    private AudioSource audioThunder;
+    [SerializeField]
+    private AudioSource audioWin;
 
     public static GameManager Instance;
 
@@ -202,10 +208,18 @@ public class GameManager : MonoBehaviour
 
         asWin = true;
         player.cameraHolder.parent = null;
+        player.stormParticles.parent = null;
 
         GameCanvas.DOFade(0, 1f);
 
+        audioManager.DOFade(0, 1f);
+        audioPlayer.DOFade(0, 1f);
+        audioBlizzard.DOFade(0, 1f);
+        audioThunder.DOFade(0, 1f);
+
         yield return new WaitForSeconds(1);
+
+        audioWin.DOFade(1f, 1f);
 
         WinCanvas.gameObject.SetActive(true);
         WinCanvas.DOFade(1, 1f);

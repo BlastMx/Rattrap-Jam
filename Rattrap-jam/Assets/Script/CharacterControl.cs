@@ -24,6 +24,7 @@ public class CharacterControl : MonoBehaviour
     private Jauge_Script playerJauge;
 
     public Transform cameraHolder;
+    public Transform stormParticles;
 
     [Header("Energy refill Particles")]
     [SerializeField]
@@ -245,8 +246,11 @@ public class CharacterControl : MonoBehaviour
 
     void ChangeClip(AudioClip audioClip)
     {
-        audioSourcePlayer.volume = 1;
-        audioSourcePlayer.PlayOneShot(audioClip);
+        if(!gameManager.asWin || !gameManager.isDead)
+        {
+            audioSourcePlayer.volume = 1;
+            audioSourcePlayer.PlayOneShot(audioClip);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
