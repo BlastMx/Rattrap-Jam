@@ -119,7 +119,7 @@ public class CharacterControl : MonoBehaviour
 
     void InitCharacter()
     {
-        transform.position = Vector3.zero;
+        transform.position = new Vector3(0, 0.55f, 3.92f);
         Lane = currentLane.MiddleLane;
     }
 
@@ -263,6 +263,12 @@ public class CharacterControl : MonoBehaviour
                 case "Obstacle":
                     if (canJump)
                     {
+                        if (canBoost)
+                        {
+                            canBoost = false;
+                            speedUp.DOScale(Vector3.zero, 1f);
+                        }
+
                         StartCoroutine(gameManager.cameraShake.Shake(gameManager.duration, gameManager.magnitude));
                         other.transform.parent.GetChild(1).gameObject.GetComponent<ParticleSystem>().Play();
                         oilSplat.Play();
@@ -352,7 +358,8 @@ public class CharacterControl : MonoBehaviour
                 break;
 
             case "SpeedUpZone":
-                canBoost = false;
+                if(canBoost)
+                    canBoost = false;
                 speedUp.DOScale(Vector3.zero, 1f);
                 break;
 
